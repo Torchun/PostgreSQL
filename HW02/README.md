@@ -28,6 +28,24 @@ $ cat infra/docker-compose.yml | grep -i ensure
 
 Логины и пароли указаны в `docker-ompose.yml` для каждого сервиса
 
+Запуск сервисов
+```
+docker-compose -f docker-compose.yml up -d
+```
+Проверяем что контейнеры работают
+```
+docker-compose -f docker-compose.yml ps -a
+```
+```
+      Name                     Command                  State                            Ports                     
+-------------------------------------------------------------------------------------------------------------------
+grafana             /run.sh                          Up             0.0.0.0:42006->3000/tcp,:::42006->3000/tcp     
+pgadmin             /entrypoint.sh                   Up             443/tcp, 0.0.0.0:42009->80/tcp,:::42009->80/tcp
+postgres            docker-entrypoint.sh postg ...   Up (healthy)   0.0.0.0:5432->5432/tcp,:::5432->5432/tcp       
+postgres-exporter   postgres_exporter                Up             0.0.0.0:42008->9187/tcp,:::42008->9187/tcp     
+prometheus          /bin/prometheus --config.f ...   Up             0.0.0.0:42007->9090/tcp,:::42007->9090/tcp     
+```
+
 ## Выполнение заданий
 ### Подключится из контейнера с клиентом к контейнеру с сервером и сделать таблицу с парой строк
 ### Подключится к контейнеру с сервером с ноутбука/компьютера извне инстансов ЯО/места установки докера
