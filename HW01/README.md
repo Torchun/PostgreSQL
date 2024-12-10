@@ -96,19 +96,16 @@ server closed the connection unexpectedly
 The connection to the server was lost. Attempting reset: Succeeded.
 ```
 
-### Повторяем с коммитом
+### Успеваем добавить коммит в сессию **1**
 
 Сессия **1**:
 ```
-insert into persons(first_name, second_name) values('sergey', 'sergeev');
 commit;
 select * from persons;
 ```
 ```
-otusdb=# insert into persons(first_name, second_name) values('sergey', 'sergeev');
-commit;
+otusdb=# commit;
 select * from persons;
-INSERT 0 1
 COMMIT
  id | first_name | second_name 
 ----+------------+-------------
@@ -121,11 +118,9 @@ COMMIT
 Сессия **2**:
 ```
 select * from persons;
-commit;
 ```
 ```
 otusdb=# select * from persons;
-commit;
  id | first_name | second_name 
 ----+------------+-------------
   1 | ivan       | ivanov
@@ -133,9 +128,9 @@ commit;
   6 | sergey     | sergeev
 (3 rows)
 
-COMMIT
 otusdb=# 
 ```
+В сессии **2** даже в рамках одной транзакции виден результат коммита сессии **1**
 
 ### Repeatable read транзации
 
