@@ -3,12 +3,12 @@
 ## Задания
 
 ### Выключить auto commit
-Старутем две сессии:
+Старутем две сессии (в двух разных терминалах):
 ```
 $ docker run --rm -ti postgres:15.10 psql -h 192.168.1.254 -p 5432 -U otus -d otusdb
 ```
 
-В первой сессии:
+В обеих сессиях отключаем автокоммит:
 ```
 otusdb=# \set AUTOCOMMIT off
 otusdb=# \echo :AUTOCOMMIT
@@ -35,7 +35,7 @@ COMMIT
 
 ```
 
-### Посмотреть текущий уровень изоляции
+### Посмотреть текущий (он же по умолчанию, default) уровень изоляции
 
 ```
 show transaction isolation level;
