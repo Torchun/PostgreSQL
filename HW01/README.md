@@ -241,6 +241,9 @@ otusdb=*#
 ```
 
 Причина такого поведения: разница "read commited" vs "repeatable read" настроек транзакции
-Подробнее: [https://www.postgresql.org/docs/current/transaction-iso.html#XACT-READ-COMMITTED](https://www.postgresql.org/docs/current/transaction-iso.html#XACT-READ-COMMITTED) vs [https://www.postgresql.org/docs/current/transaction-iso.html#XACT-REPEATABLE-READ](https://www.postgresql.org/docs/current/transaction-iso.html#XACT-REPEATABLE-READ)
+
+Подробнее: 
+ - [READ-COMMITTED](https://www.postgresql.org/docs/current/transaction-iso.html#XACT-READ-COMMITTED)
+ - [REPEATABLE-READ](https://www.postgresql.org/docs/current/transaction-iso.html#XACT-REPEATABLE-READ)
 
 
