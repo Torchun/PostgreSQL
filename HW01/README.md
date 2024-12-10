@@ -96,7 +96,7 @@ server closed the connection unexpectedly
 The connection to the server was lost. Attempting reset: Succeeded.
 ```
 
-### Успеваем добавить коммит в сессию **1**
+Успеваем добавить коммит в сессию **1**
 
 Сессия **1**:
 ```
@@ -104,7 +104,7 @@ commit;
 select * from persons;
 ```
 ```
-otusdb=# commit;
+otusdb=*# commit;
 select * from persons;
 COMMIT
  id | first_name | second_name 
@@ -120,7 +120,7 @@ COMMIT
 select * from persons;
 ```
 ```
-otusdb=# select * from persons;
+otusdb=*# select * from persons;
  id | first_name | second_name 
 ----+------------+-------------
   1 | ivan       | ivanov
@@ -128,7 +128,7 @@ otusdb=# select * from persons;
   6 | sergey     | sergeev
 (3 rows)
 
-otusdb=# 
+otusdb=*# 
 ```
 В сессии **2** даже в рамках одной транзакции виден результат коммита сессии **1**
 
