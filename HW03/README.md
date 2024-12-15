@@ -5,8 +5,9 @@
  - поставьте на нее PostgreSQL 15 через sudo apt
 
 **Решение:**
+
 [https://www.postgresql.org/download/linux/ubuntu/](https://www.postgresql.org/download/linux/ubuntu/)
-ставим по инструкции, т.к. по умолчанию в репозиториях дистрибутива будет какая-то версия, но не все доступные
+ставим по инструкции, т.к. по умолчанию в репозиториях дистрибутива будет _какая-то_ версия, но не все доступные
  - Import the repository signing key:
 ```
 sudo apt install curl ca-certificates
@@ -39,16 +40,16 @@ postgresql-9.6 - The World's Most Advanced Open Source Relational Database
 ```
 sudo apt -y install postgresql-15
 ```
- - проверьте что кластер запущен через sudo -u postgres pg_lsclusters
+ - проверьте что кластер запущен через `sudo -u postgres pg_lsclusters`
 ```
 (base) [developer@postgres-01] ~ $ sudo -u postgres pg_lsclusters
 Ver Cluster Port Status Owner    Data directory              Log file
 15  main    5432 online postgres /var/lib/postgresql/15/main /var/log/postgresql/postgresql-15-main.log
 ```
- - зайдите из под пользователя postgres в psql и сделайте произвольную таблицу с произвольным содержимым
-   `postgres=# create table test(c1 text);`
-   `postgres=# insert into test values('1');`
-   `\q`
+ - зайдите из под пользователя postgres в psql и сделайте произвольную таблицу с произвольным содержимым:
+ - `postgres=# create table test(c1 text);`
+ - `postgres=# insert into test values('1');`
+ - `\q`
 ```
 (base) [developer@postgres-01] ~ $ sudo su - postgres
 [sudo] password for developer: 
@@ -69,7 +70,7 @@ postgres=# select * from test;
 postgres=# \q
 postgres@postgres-01:~$ 
 ```
- - остановите postgres например через sudo -u postgres pg_ctlcluster 15 main stop
+ - остановите postgres например через `sudo -u postgres pg_ctlcluster 15 main stop`
 ```
 (base) [developer@postgres-01] ~ $ sudo -u postgres pg_ctlcluster 15 main stop
 Warning: stopping the cluster using pg_ctlcluster will mark the systemd unit as failed. Consider using systemctl:
@@ -86,6 +87,7 @@ Ver Cluster Port Status Owner    Data directory              Log file
  - перезагрузите инстанс и убедитесь, что диск остается примонтированным (если не так смотрим в сторону fstab)
 
 **Решение**
+
 В ссылке-подсказке используется работа с блочными устройствами, без привлечения LVM.
 В production-ready установках стоит пользоваться LVM для гибкости управления (например, увеличение емкости файловой системы когда выделенного диска станет нехватать).
 ```
@@ -158,7 +160,15 @@ vdb
 # append
 /dev/vdb1       /mnt/data       ext4    defaults        0       2
 ```
-Монтриуем **все** файловые системы, упомянутые в `/etc/fstab` - так убеждаемся что добавленная строка сработает при старте системы
+где
+ - `/dev/vdb1` - блочное устройство (наш диск) 
+ - `/mnt/data` - точка монтирования (директория)
+ - `ext4` - тип файловой системы, которая присутствует на блочном устройстве (диске)
+ - `defaults` - опции монтирования (aio,cio,dio,rw,ro etc.)
+ - `0` - зависит от ОС, в Ubuntu 20.04 - необходимост ь прогона fsck при старте системы
+ - `2` - зависит от ОС, в Ubuntu 20.04 - очередность монтирования ФС (сначала 0, потом 1, 2 - после корня)
+
+Монтриуем **все** файловые системы, упомянутые в `/etc/fstab` - так убеждаемся что добавленная строка сработает при старте системы (уже смонтированные игнорируются)
 ```
 (base) [developer@postgres-01] ~ $ sudo mount -a
 (base) [developer@postgres-01] ~ $ df -h /mnt/data
@@ -172,7 +182,7 @@ Filesystem      Size  Used Avail Use% Mounted on
 Filesystem      Size  Used Avail Use% Mounted on
 /dev/vdb1        20G   45M   19G   1% /mnt/data
 ```
- - сделайте пользователя postgres владельцем /mnt/data - chown -R postgres:postgres /mnt/data/
+ - сделайте пользователя postgres владельцем /mnt/data - `chown -R postgres:postgres /mnt/data/`
 ```
 (base) [developer@postgres-01] ~ $ sudo chown -R postgres:postgres /mnt/data/
 [sudo] password for developer: 
@@ -182,7 +192,7 @@ drwxr-xr-x 3 postgres postgres  4096 Dec 15 13:18 ./
 drwxr-xr-x 3 root     root      4096 Dec 15 13:19 ../
 drwx------ 2 postgres postgres 16384 Dec 15 13:18 lost+found/
 ```
- - перенесите содержимое /var/lib/postgres/15 в /mnt/data
+ - перенесите содержимое `/var/lib/postgres/15` в `/mnt/data`
 ```
 (base) [developer@postgres-01] ~ $ sudo mv /var/lib/postgresql/15 /mnt/data
 (base) [developer@postgres-01] ~ $ ls -pla /mnt/data/
@@ -200,8 +210,10 @@ drwx------ 2 postgres postgres 16384 Dec 15 13:18 lost+found/
 (base) [developer@postgres-01] ~ $ sudo -u postgres pg_ctlcluster 15 main start
 Error: /var/lib/postgresql/15/main is not accessible or does not exist
 ```
- - задание: найти конфигурационный параметр в файлах раположенных в /etc/postgresql/15/main который надо поменять и поменяйте его
+ - задание: найти конфигурационный параметр в файлах раположенных в `/etc/postgresql/15/main` который надо поменять и поменяйте его
  - напишите что и почему поменяли
+
+Решение: `/etc/postgresql/15/main/postgresql.conf`
 ```
 (base) [developer@postgres-01] ~ $ cat /etc/postgresql/15/main/postgresql.conf | grep -i data_directory
 data_directory = '/var/lib/postgresql/15/main'		# use data in another directory
@@ -238,7 +250,7 @@ Removed stale pid file.
 Ver Cluster Port Status Owner    Data directory     Log file
 15  main    5432 online postgres /mnt/data/15/main/ /var/log/postgresql/postgresql-15-main.log
 ```
- - зайдите через через psql и проверьте содержимое ранее созданной таблицы
+ - зайдите через через `psql` и проверьте содержимое ранее созданной таблицы
 ```
 (base) [developer@postgres-01] ~ $ sudo su - postgres
 postgres@postgres-01:~$ psql
@@ -256,8 +268,8 @@ postgres@postgres-01:~$ logout
 (base) [developer@postgres-01] ~ $ 
 ```
 
-### задание со звездочкой *
- - не удаляя существующий инстанс ВМ сделайте новый, поставьте на его PostgreSQL, удалите файлы с данными из /var/lib/postgres, перемонтируйте внешний диск который сделали ранее от первой виртуальной машины ко второй и запустите PostgreSQL на второй машине так чтобы он работал с данными на внешнем диске, расскажите как вы это сделали и что в итоге получилось.
+### Задание со звездочкой *
+ - не удаляя существующий инстанс ВМ сделайте новый, поставьте на его PostgreSQL, удалите файлы с данными из `/var/lib/postgres`, перемонтируйте внешний диск который сделали ранее от первой виртуальной машины ко второй и запустите PostgreSQL на второй машине так чтобы он работал с данными на внешнем диске, расскажите как вы это сделали и что в итоге получилось.
 
 Останавливаем Postgres на текущей виртуалке - для предотвращения изменения данных:
 ```
@@ -333,9 +345,9 @@ drwxr-xr-x 3 postgres postgres  4096 Dec 15 12:42 15/
 drwx------ 2 postgres postgres 16384 Dec 15 13:18 lost+found/
 ```
 Устанавливаем postgres 15
- - команды такие же как в первых заданиях
+ - команды такие же как в первых заданиях (не дублирую)
 
-Останавливаем кластер для внесения изменений
+После установки PostgreSQL - останавливаем кластер для внесения изменений
 ```
 (base) [developer@postgres-02] ~ $ sudo -u postgres pg_lsclusters
 Ver Cluster Port Status Owner    Data directory              Log file
@@ -347,7 +359,7 @@ Warning: stopping the cluster using pg_ctlcluster will mark the systemd unit as 
 Ver Cluster Port Status Owner    Data directory              Log file
 15  main    5432 down   postgres /var/lib/postgresql/15/main /var/log/postgresql/postgresql-15-main.log
 ```
-Правим postgresql.conf
+Правим `postgresql.conf`
 ```
 (base) [developer@postgres-02] ~ $ cat /etc/postgresql/15/main/postgresql.conf | grep -i data_directory
 # data_directory = '/var/lib/postgresql/15/main'		# use data in another directory
