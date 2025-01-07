@@ -163,7 +163,7 @@ sysbench \
 |----------------------------|-----------------|------------------|
 | default                    | 9476.953073     | 1035.4293        |
 | pgconfig_org               | -               | -                |
-| pgconfigurator_cybertec_at | -               | -                |
+| pgconfigurator_cybertec_at | 13853.644787    | 877.4678         |
 | pgtune_leopard_in_ua       | 11093.554599    | 945.3695         |
 | custom                     | -               | -                |
 

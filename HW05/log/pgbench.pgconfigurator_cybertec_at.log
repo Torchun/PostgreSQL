@@ -1,0 +1,46 @@
+Password: 
+pgbench (15.10 (Debian 15.10-1.pgdg120+1))
+starting vacuum...end.
+progress: 10.0 s, 16034.7 tps, lat 5.672 ms stddev 1.469, 0 failed
+progress: 20.0 s, 16913.8 tps, lat 5.587 ms stddev 1.407, 0 failed
+progress: 30.0 s, 17068.2 tps, lat 5.540 ms stddev 1.392, 0 failed
+progress: 40.0 s, 12711.3 tps, lat 7.445 ms stddev 2.680, 0 failed
+progress: 50.0 s, 13504.3 tps, lat 7.009 ms stddev 1.973, 0 failed
+progress: 60.0 s, 12736.6 tps, lat 7.438 ms stddev 2.454, 0 failed
+progress: 70.0 s, 13237.9 tps, lat 7.153 ms stddev 1.853, 0 failed
+progress: 80.0 s, 13230.7 tps, lat 7.154 ms stddev 2.198, 0 failed
+progress: 90.0 s, 13560.2 tps, lat 6.984 ms stddev 1.877, 0 failed
+progress: 100.0 s, 13356.1 tps, lat 7.089 ms stddev 2.217, 0 failed
+progress: 110.0 s, 13012.9 tps, lat 7.275 ms stddev 2.276, 0 failed
+progress: 120.0 s, 13776.9 tps, lat 6.873 ms stddev 1.826, 0 failed
+progress: 130.0 s, 12680.1 tps, lat 7.469 ms stddev 2.682, 0 failed
+progress: 140.0 s, 13563.1 tps, lat 6.976 ms stddev 1.711, 0 failed
+progress: 150.0 s, 12747.8 tps, lat 7.430 ms stddev 2.737, 0 failed
+progress: 160.0 s, 13403.1 tps, lat 7.066 ms stddev 2.264, 0 failed
+progress: 170.0 s, 13955.2 tps, lat 6.781 ms stddev 1.494, 0 failed
+progress: 180.0 s, 12846.2 tps, lat 7.374 ms stddev 2.743, 0 failed
+progress: 190.0 s, 13391.5 tps, lat 7.071 ms stddev 2.133, 0 failed
+progress: 200.0 s, 14102.4 tps, lat 6.715 ms stddev 1.961, 0 failed
+progress: 210.0 s, 13256.8 tps, lat 7.143 ms stddev 2.009, 0 failed
+progress: 220.0 s, 13997.9 tps, lat 6.762 ms stddev 1.567, 0 failed
+progress: 230.0 s, 12826.1 tps, lat 7.383 ms stddev 2.522, 0 failed
+progress: 240.0 s, 13432.5 tps, lat 7.049 ms stddev 1.962, 0 failed
+progress: 250.0 s, 15012.2 tps, lat 6.306 ms stddev 1.237, 0 failed
+progress: 260.0 s, 13381.4 tps, lat 7.080 ms stddev 2.571, 0 failed
+progress: 270.0 s, 14538.9 tps, lat 6.513 ms stddev 1.572, 0 failed
+progress: 280.0 s, 13433.4 tps, lat 7.051 ms stddev 2.695, 0 failed
+progress: 290.0 s, 14500.8 tps, lat 6.531 ms stddev 1.758, 0 failed
+progress: 300.0 s, 14939.8 tps, lat 6.338 ms stddev 0.921, 0 failed
+transaction type: <builtin: simple update>
+scaling factor: 2650
+query mode: simple
+number of clients: 95
+number of threads: 4
+maximum number of tries: 1
+duration: 300 s
+number of transactions actually processed: 4151608
+number of failed transactions: 0 (0.000%)
+latency average = 6.833 ms
+latency stddev = 2.109 ms
+initial connection time = 375.743 ms
+tps = 13853.644787 (without initial connection time)
