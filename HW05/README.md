@@ -46,7 +46,7 @@ otusdb=# CREATE DATABASE pgbench;
 ```
 
 Наполняем тестовыми данными
-```
+```commandline
 echo "Prepare DB"
 echo " ~ 32 Gb of data, x2 times more than RAM"
 docker run --rm -ti postgres:15.10 pgbench --username=otus -h 192.168.1.254 pgbench -i -s 2650
@@ -161,7 +161,7 @@ sysbench \
 
 | config                     | pgbench TPS | sysbench TPS |
 |----------------------------|-------------|--------------|
-| default                    | -           | -            |
+| default                    | 9476.953073 | 1035.4293    |
 | pgconfig_org               | -           | -            |
 | pgconfigurator_cybertec_at | -           | -            |
 | pgtune_leopard_in_ua       | -           | -            |

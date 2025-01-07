@@ -1,0 +1,32 @@
+Initializing worker threads...
+
+Threads started!
+
+SQL statistics:
+    queries performed:
+        read:                            4349912
+        write:                           1242534
+        other:                           621560
+        total:                           6214006
+    transactions:                        310631 (1035.43 per sec.)
+    queries:                             6214006 (20713.21 per sec.)
+    ignored errors:                      77     (0.26 per sec.)
+    reconnects:                          0      (0.00 per sec.)
+
+Throughput:
+    events/s (eps):                      1035.4293
+    time elapsed:                        300.0021s
+    total number of events:              310631
+
+Latency (ms):
+         min:                                    2.88
+         avg:                                    3.86
+         max:                                   24.39
+         95th percentile:                        5.77
+         sum:                              1199661.66
+
+Threads fairness:
+    events (avg/stddev):           77657.7500/11.10
+    execution time (avg/stddev):   299.9154/0.00
+
+
