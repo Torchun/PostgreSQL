@@ -159,12 +159,12 @@ sysbench \
 
 ### Результаты
 
-| config                     | pgbench TPS | sysbench TPS |
-|----------------------------|-------------|--------------|
-| default                    | 9476.953073 | 1035.4293    |
-| pgconfig_org               | -           | -            |
-| pgconfigurator_cybertec_at | -           | -            |
-| pgtune_leopard_in_ua       | -           | -            |
-| custom                     | -           | -            |
+| config                     | pgbench avg TPS | sysbench avg TPS |
+|----------------------------|-----------------|------------------|
+| default                    | 9476.953073     | 1035.4293        |
+| pgconfig_org               | 11093.554599    | 945.3695         |
+| pgconfigurator_cybertec_at | -               | -                |
+| pgtune_leopard_in_ua       | -               | -                |
+| custom                     | -               | -                |
 
 
