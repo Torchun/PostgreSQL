@@ -21,8 +21,8 @@ services:
       # - ./config/default.conf:/etc/postgresql/postgresql.conf
       # - ./config/pgtune_leopard_in_ua.conf:/etc/postgresql/postgresql.conf
       # - ./config/pgconfigurator_cybertec_at.conf:/etc/postgresql/postgresql.conf
-      - ./config/pgconfig_org.conf:/etc/postgresql/postgresql.conf
-      # - ./config/custom.conf:/etc/postgresql/postgresql.conf
+      # - ./config/pgconfig_org.conf:/etc/postgresql/postgresql.conf
+      - ./config/custom.conf:/etc/postgresql/postgresql.conf
     ports:
       - 5432:5432
     healthcheck:

@@ -1,0 +1,161 @@
+root@106d22203c9c:~# sysbench   --db-driver=pgsql   --pgsql-host="192.168.1.254"   --pgsql-port=5432   --pgsql-user=otus   --pgsql-password=password   --pgsql-db=sysbench   --time=300   --threads=4   "/sysbench/src/lua/oltp_read_write.lua"   run 
+sysbench 1.1.0-de18a03 (using bundled LuaJIT 2.1.0-beta3)
+
+Running the test with following options:
+Number of threads: 4
+Initializing random number generator from current time
+
+
+Initializing worker threads...
+
+Threads started!
+
+SQL statistics:
+    queries performed:
+        read:                            3164686
+        write:                           904013
+        other:                           452191
+        total:                           4520890
+    transactions:                        226004 (753.34 per sec.)
+    queries:                             4520890 (15069.45 per sec.)
+    ignored errors:                      45     (0.15 per sec.)
+    reconnects:                          0      (0.00 per sec.)
+
+Throughput:
+    events/s (eps):                      753.3375
+    time elapsed:                        300.0036s
+    total number of events:              226004
+
+Latency (ms):
+         min:                                    3.01
+         avg:                                    5.31
+         max:                                   34.09
+         95th percentile:                        6.21
+         sum:                              1199743.88
+
+Threads fairness:
+    events (avg/stddev):           56501.0000/5.24
+    execution time (avg/stddev):   299.9360/0.00
+
+
+
+root@106d22203c9c:~# sysbench   --db-driver=pgsql   --pgsql-host="192.168.1.254"   --pgsql-port=5432   --pgsql-user=otus   --pgsql-password=password   --pgsql-db=sysbench   --time=300   --threads=4   "/sysbench/src/lua/oltp_read_write.lua"   run 
+sysbench 1.1.0-de18a03 (using bundled LuaJIT 2.1.0-beta3)
+
+Running the test with following options:
+Number of threads: 4
+Initializing random number generator from current time
+
+
+Initializing worker threads...
+
+Threads started!
+
+SQL statistics:
+    queries performed:
+        read:                            3185896
+        write:                           910078
+        other:                           455202
+        total:                           4551176
+    transactions:                        227512 (758.36 per sec.)
+    queries:                             4551176 (15170.26 per sec.)
+    ignored errors:                      52     (0.17 per sec.)
+    reconnects:                          0      (0.00 per sec.)
+
+Throughput:
+    events/s (eps):                      758.3572
+    time elapsed:                        300.0064s
+    total number of events:              227512
+
+Latency (ms):
+         min:                                    2.95
+         avg:                                    5.27
+         max:                                   32.94
+         95th percentile:                        6.21
+         sum:                              1199782.16
+
+Threads fairness:
+    events (avg/stddev):           56878.0000/8.37
+    execution time (avg/stddev):   299.9455/0.00
+
+
+root@106d22203c9c:~# sysbench   --db-driver=pgsql   --pgsql-host="192.168.1.254"   --pgsql-port=5432   --pgsql-user=otus   --pgsql-password=password   --pgsql-db=sysbench   --time=300   --threads=4   "/sysbench/src/lua/oltp_read_write.lua"   run 
+sysbench 1.1.0-de18a03 (using bundled LuaJIT 2.1.0-beta3)
+
+Running the test with following options:
+Number of threads: 4
+Initializing random number generator from current time
+
+
+Initializing worker threads...
+
+Threads started!
+
+SQL statistics:
+    queries performed:
+        read:                            3029250
+        write:                           865325
+        other:                           432833
+        total:                           4327408
+    transactions:                        216329 (721.08 per sec.)
+    queries:                             4327408 (14424.34 per sec.)
+    ignored errors:                      46     (0.15 per sec.)
+    reconnects:                          0      (0.00 per sec.)
+
+Throughput:
+    events/s (eps):                      721.0791
+    time elapsed:                        300.0073s
+    total number of events:              216329
+
+Latency (ms):
+         min:                                    3.06
+         avg:                                    5.55
+         max:                                   42.22
+         95th percentile:                        6.43
+         sum:                              1199745.19
+
+Threads fairness:
+    events (avg/stddev):           54082.2500/9.73
+    execution time (avg/stddev):   299.9363/0.01
+
+
+root@106d22203c9c:~# sysbench   --db-driver=pgsql   --pgsql-host="192.168.1.254"   --pgsql-port=5432   --pgsql-user=otus   --pgsql-password=password   --pgsql-db=sysbench   --time=300   --threads=4   "/sysbench/src/lua/oltp_read_write.lua"   run 
+sysbench 1.1.0-de18a03 (using bundled LuaJIT 2.1.0-beta3)
+
+Running the test with following options:
+Number of threads: 4
+Initializing random number generator from current time
+
+
+Initializing worker threads...
+
+Threads started!
+
+SQL statistics:
+    queries performed:
+        read:                            2778496
+        write:                           793678
+        other:                           397006
+        total:                           3969180
+    transactions:                        198414 (661.37 per sec.)
+    queries:                             3969180 (13230.42 per sec.)
+    ignored errors:                      50     (0.17 per sec.)
+    reconnects:                          0      (0.00 per sec.)
+
+Throughput:
+    events/s (eps):                      661.3710
+    time elapsed:                        300.0041s
+    total number of events:              198414
+
+Latency (ms):
+         min:                                    4.02
+         avg:                                    6.05
+         max:                                   46.53
+         95th percentile:                        7.30
+         sum:                              1199743.74
+
+Threads fairness:
+    events (avg/stddev):           49603.5000/10.52
+    execution time (avg/stddev):   299.9359/0.00
+
+

@@ -165,6 +165,6 @@ sysbench \
 | pgconfig_org               | 12060.450764    | 739.6231         |
 | pgconfigurator_cybertec_at | 13853.644787    | 877.4678         |
 | pgtune_leopard_in_ua       | 11093.554599    | 945.3695         |
-| custom                     | -               | -                |
+| custom                     | 15043.122535    | 661.3710         |
 
 
