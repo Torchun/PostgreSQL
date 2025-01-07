@@ -1,0 +1,38 @@
+version: "3.7"
+
+services:
+
+  postgres:
+    image: postgres:15.10
+    restart: unless-stopped
+    container_name: postgres
+    command:
+      - "postgres"
+      - "-c"
+      - "config_file=/etc/postgresql/postgresql.conf"
+    environment:
+      POSTGRES_DB: "otusdb"
+      POSTGRES_USER: "otus"
+      POSTGRES_PASSWORD: "password"
+      PGDATA: "/var/lib/postgresql/data/pgdata"
+    # pass single config file at a time
+    volumes:
+      - ./postgres/data:/var/lib/postgresql/data
+      - ./config/default.conf:/etc/postgresql/postgresql.conf
+      # - ./config/pgtune_leopard_in_ua.conf:/etc/postgresql/postgresql.conf
+      # - ./config/pgconfigurator_cybertec_at.conf:/etc/postgresql/postgresql.conf
+      # - ./config/pgconfig_org.conf:/etc/postgresql/postgresql.conf
+      # - ./config/custom.conf:/etc/postgresql/postgresql.conf
+    ports:
+      - 5432:5432
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U otus -d otus"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 10s
+    deploy:
+      resources:
+        limits:
+          cpus: '4'
+          memory: 16G
