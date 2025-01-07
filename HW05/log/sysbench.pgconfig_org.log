@@ -1,0 +1,37 @@
+Running the test with following options:
+Number of threads: 4
+Initializing random number generator from current time
+
+
+Initializing worker threads...
+
+Threads started!
+
+SQL statistics:
+    queries performed:
+        read:                            3107048
+        write:                           887554
+        other:                           443954
+        total:                           4438556
+    transactions:                        221890 (739.62 per sec.)
+    queries:                             4438556 (14794.98 per sec.)
+    ignored errors:                      42     (0.14 per sec.)
+    reconnects:                          0      (0.00 per sec.)
+
+Throughput:
+    events/s (eps):                      739.6231
+    time elapsed:                        300.0042s
+    total number of events:              221890
+
+Latency (ms):
+         min:                                    2.95
+         avg:                                    5.41
+         max:                                   90.40
+         95th percentile:                        6.32
+         sum:                              1199719.67
+
+Threads fairness:
+    events (avg/stddev):           55472.5000/11.08
+    execution time (avg/stddev):   299.9299/0.00
+
+
