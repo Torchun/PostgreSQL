@@ -391,7 +391,145 @@ EXCLUSIVE и ACCESS EXCLUSIVE. Этот режим защищает таблиц
 
 ### Воспроизведите взаимоблокировку трех транзакций. Можно ли разобраться в ситуации постфактум, изучая журнал сообщений?
 
+Пример разобран тут: [https://www.ibm.com/docs/en/db2-for-zos/12?topic=scenarios-scenario-three-way-deadlock-three-resources](https://www.ibm.com/docs/en/db2-for-zos/12?topic=scenarios-scenario-three-way-deadlock-three-resources)
 
+ - Terminal **1**
+```commandline
+BEGIN;
+UPDATE accounts SET amount = amount - 100.00 WHERE acc_no = 1;
+```
+
+ - Terminal **2**
+```commandline
+BEGIN;
+UPDATE accounts SET amount = amount - 100.00 WHERE acc_no = 2;
+```
+
+ - Terminal **3**
+```commandline
+BEGIN;
+UPDATE accounts SET amount = amount - 100.00 WHERE acc_no = 3;
+```
+
+ - Terminal **1**
+```commandline
+UPDATE accounts SET amount = amount + 50 WHERE acc_no = 2;
+```
+
+ - Terminal **2**
+```commandline
+UPDATE accounts SET amount = amount + 50 WHERE acc_no = 3;
+```
+
+ - Terminal **3**
+```commandline
+UPDATE accounts SET amount = amount + 50 WHERE acc_no = 1;
+```
+И тут мы увидим deadlock:
+```commandline
+ERROR:  deadlock detected
+DETAIL:  Process 8131 waits for ShareLock on transaction 747; blocked by process 281.
+Process 281 waits for ShareLock on transaction 748; blocked by process 3806.
+Process 3806 waits for ShareLock on transaction 749; blocked by process 8131.
+HINT:  See server log for query details.
+CONTEXT:  while updating tuple (0,8) in relation "accounts"
+```
+
+В логе будет соответствующие сообщения:
+```commandline
+2025-01-11 12:44:06.641 UTC [281] LOG:  process 281 still waiting for ShareLock on transaction 748 after 200.147 ms
+2025-01-11 12:44:06.641 UTC [281] DETAIL:  Process holding the lock: 3806. Wait queue: 281.
+2025-01-11 12:44:06.641 UTC [281] CONTEXT:  while updating tuple (0,2) in relation "accounts"
+2025-01-11 12:44:06.641 UTC [281] STATEMENT:  UPDATE accounts SET amount = amount + 50 WHERE acc_no = 2;
+2025-01-11 12:44:15.967 UTC [3806] LOG:  process 3806 still waiting for ShareLock on transaction 749 after 200.031 ms
+2025-01-11 12:44:15.967 UTC [3806] DETAIL:  Process holding the lock: 8131. Wait queue: 3806.
+2025-01-11 12:44:15.967 UTC [3806] CONTEXT:  while updating tuple (0,3) in relation "accounts"
+2025-01-11 12:44:15.967 UTC [3806] STATEMENT:  UPDATE accounts SET amount = amount + 50 WHERE acc_no = 3;
+2025-01-11 12:44:31.433 UTC [8131] LOG:  process 8131 detected deadlock while waiting for ShareLock on transaction 747 after 200.067 ms
+2025-01-11 12:44:31.433 UTC [8131] DETAIL:  Process holding the lock: 281. Wait queue: .
+2025-01-11 12:44:31.433 UTC [8131] CONTEXT:  while updating tuple (0,8) in relation "accounts"
+2025-01-11 12:44:31.433 UTC [8131] STATEMENT:  UPDATE accounts SET amount = amount + 50 WHERE acc_no = 1;
+2025-01-11 12:44:31.433 UTC [8131] ERROR:  deadlock detected
+2025-01-11 12:44:31.433 UTC [8131] DETAIL:  Process 8131 waits for ShareLock on transaction 747; blocked by process 281.
+	Process 281 waits for ShareLock on transaction 748; blocked by process 3806.
+	Process 3806 waits for ShareLock on transaction 749; blocked by process 8131.
+	Process 8131: UPDATE accounts SET amount = amount + 50 WHERE acc_no = 1;
+	Process 281: UPDATE accounts SET amount = amount + 50 WHERE acc_no = 2;
+	Process 3806: UPDATE accounts SET amount = amount + 50 WHERE acc_no = 3;
+2025-01-11 12:44:31.433 UTC [8131] HINT:  See server log for query details.
+2025-01-11 12:44:31.433 UTC [8131] CONTEXT:  while updating tuple (0,8) in relation "accounts"
+2025-01-11 12:44:31.433 UTC [8131] STATEMENT:  UPDATE accounts SET amount = amount + 50 WHERE acc_no = 1;
+2025-01-11 12:44:31.434 UTC [3806] LOG:  process 3806 acquired ShareLock on transaction 749 after 15666.266 ms
+2025-01-11 12:44:31.434 UTC [3806] CONTEXT:  while updating tuple (0,3) in relation "accounts"
+2025-01-11 12:44:31.434 UTC [3806] STATEMENT:  UPDATE accounts SET amount = amount + 50 WHERE acc_no = 3;
+```
+
+Во всех трех терминалах закончим транзакции откатом:
+ - Terminal **1**, **2**, **3**:
+```commandline
+ROLLBACK;
+```
 
 ### Могут ли две транзакции, выполняющие единственную команду UPDATE одной и той же таблицы (без where), заблокировать друг друга?
 
+Этот случай разбирали в лекции, упрощенный вариант предыдущего задания.
+
+Подробности с вариантом объяснения [https://www.ibm.com/docs/en/db2-for-zos/12?topic=scenarios-scenario-two-way-deadlock-two-resources](https://www.ibm.com/docs/en/db2-for-zos/12?topic=scenarios-scenario-two-way-deadlock-two-resources)
+
+
+ - Terminal **1**
+Проверим параметры 
+```commandline
+SHOW deadlock_timeout;
+SHOW lock_timeout;
+```
+```commandline
+locks=# SHOW deadlock_timeout;
+ deadlock_timeout 
+------------------
+ 200ms
+(1 row)
+
+locks=# SHOW lock_timeout;
+ lock_timeout 
+--------------
+ 0
+(1 row)
+```
+
+Первая транзакция намерена перенести 100 рублей с первого счета на второй. 
+Для этого она сначала уменьшает первый счет
+```commandline
+BEGIN;
+UPDATE accounts SET amount = amount - 100.00 WHERE acc_no = 1;
+```
+
+В это же время вторая транзакция намерена перенести 10 рублей со второго счета на первый. 
+Она начинает с того, что уменьшает второй счет:
+ - Terminal **2**
+```commandline
+BEGIN;
+UPDATE accounts SET amount = amount - 10.00 WHERE acc_no = 2;
+```
+
+ - Terminal **1** 
+```commandline
+UPDATE accounts SET amount = amount + 100.00 WHERE acc_no = 2;
+```
+
+-- Session #2
+ - Terminal **2**
+```commandline
+UPDATE accounts SET amount = amount + 10.00 WHERE acc_no = 1;
+```
+Возникает циклическое ожидание, который никогда не завершится само по себе. 
+Через секунду первая транзакция, не получив доступ к ресурсу, инициирует проверку взаимоблокировки и обрывается сервером.
+
+```commandline
+ROLLBACK;
+```
+
+ - Terminal **1**
+```commandline
+ROLLBACK;
+```
