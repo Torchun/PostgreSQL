@@ -1,0 +1,41 @@
+CREATE TABLE test (
+    field_1 TEXT,
+    updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
+);
+
+INSERT INTO
+  test (field_1)
+SELECT
+  md5(random()::text)
+FROM
+  generate_series(1,1000000);
+
+SELECT COUNT (*) FROM test ;
+
+
+# autovacuum
+SELECT relname, last_vacuum, last_autovacuum FROM pg_stat_user_tables;
+
+# updated
+select count(1) from my_table where xmax <> 0;
+
+SELECT relname,
+       n_live_tup,
+       n_dead_tup,
+       trunc(100*n_dead_tup/(n_live_tup+1))::float "ratio%",
+       last_autovacuum
+FROM pg_stat_user_tables
+WHERE relname = 'test';
+
+
+UPDATE test SET field_1 = field_1||'_';
+
+
+DO $$
+  BEGIN
+    FOR i IN 0..10 LOOP
+      UPDATE test SET field_1 = field_1||'Ж';
+    END LOOP;
+  END;
+$$;
+
