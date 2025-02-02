@@ -570,6 +570,22 @@ QUERY PLAN
 
 ## Итоги
 
+### Список и размер индексов
+```postgresql
+\di+
+```
+```postgresql
+                                       List of relations
+ Schema |              Name              | Type  |  Owner   |   Table   |  Size   | Description 
+--------+--------------------------------+-------+----------+-----------+---------+-------------
+ public | idx_documents_contents         | index | postgres | documents | 16 kB   | 
+ public | idx_products_brand_product_id  | index | postgres | products  | 3104 kB | 
+ public | idx_products_is_available_true | index | postgres | products  | 16 kB   | 
+ public | idx_products_product_id        | index | postgres | products  | 2208 kB | 
+ public | idx_products_product_id_brand  | index | postgres | products  | 3104 kB | 
+(5 rows)
+```
+
 ### Статистика индексов
 
 ```postgresql
