@@ -608,6 +608,13 @@ SELECT
         ORDER BY total_size DESC
     ) AS pretty_sizes;
 ```
+```commandline
+      table_name      | table_size | indexes_size | total_size 
+----------------------+------------+--------------+------------
+ "public"."test"      | 104 MB     | 0 bytes      | 104 MB
+ "public"."products"  | 5920 kB    | 8432 kB      | 14 MB
+ "public"."documents" | 16 kB      | 16 kB        | 32 kB
+```
 
 ### Неиспользуемые индексы
 
@@ -630,4 +637,13 @@ SELECT
         WHERE c.conindid = s.indexrelid
     )
     ORDER BY pg_relation_size(s.indexrelid) DESC;
+```
+```commandline
+ schemaname | tablename |           indexname            | index_size | idx_scan 
+------------+-----------+--------------------------------+------------+----------
+ public     | products  | idx_products_product_id_brand  | 3104 kB    |        2
+ public     | products  | idx_products_brand_product_id  | 3104 kB    |        1
+ public     | products  | idx_products_product_id        | 2208 kB    |        5
+ public     | products  | idx_products_is_available_true | 16 kB      |        0
+ (4 rows)
 ```
