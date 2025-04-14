@@ -122,6 +122,7 @@ hw13=# SELECT * FROM test1;
 ```
 2. Пишем в `postgres-01` VM, читаем на остальных
 
+ - `postgres-01` VM
 ```sql
 INSERT INTO test2 (id, content) VALUES (1, 'random text in second table');
 ```
