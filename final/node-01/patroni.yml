@@ -1,0 +1,62 @@
+scope: postgres
+namespace: Cluster
+name: node-01
+restapi:
+    listen: 0.0.0.0:8008
+    connect_address: 172.17.210.18:8008
+etcd3:
+    host: 172.17.210.17:2379
+    host: 172.17.210.18:2379
+    host: 172.17.210.19:2379
+bootstrap:
+  dcs:
+    ttl: 30
+    loop_wait: 10
+    retry_timeout: 10
+    maximum_lag_on_failover: 1048576
+    postgresql:
+      use_pg_rewind: true
+      use_slots: true
+      parameters:
+        wal_level: replica
+        hot_standby: "on"
+        wal_keep_segments: 10
+        max_wal_senders: 5
+        max_replication_slots: 10
+        wal_log_hints: "on"
+        logging_collector: 'on'
+        max_wal_size: '10GB'
+  initdb:
+  - encoding: UTF8
+  - data-checksums
+  pg_hba:
+  - host replication replicator 127.0.0.1/32 md5
+  - host replication replicator 172.17.210.17/0 md5
+  - host replication replicator 172.17.210.18/0 md5
+  - host replication replicator 172.17.210.19/0 md5
+  - host all all 0.0.0.0/0 md5
+  users:
+    admin:
+      password: admin
+      options:
+        - createrole
+        - createdb
+postgresql:
+  listen: 0.0.0.0:5432
+  connect_address: 172.17.210.18:5432
+  data_dir: /var/lib/postgresql/patroni-packages/data
+  pgpass: /tmp/pgpass
+  authentication:
+    replication:
+      username: replicator
+      password: 'password'
+    superuser:
+      username: postgres
+      password: 'password'
+  parameters:
+      unix_socket_directories: '.'
+tags:
+    nofailover: false
+    noloadbalance: false
+    clonefrom: false
+    nosync: false
