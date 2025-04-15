@@ -51,7 +51,7 @@ $ docker run --rm -ti --net=host quay.io/coreos/etcd:v3.5.16 etcdctl --endpoints
 
 Дополнительно, сделаем симлинк:
 ```commandline
-sudo ln -s /usr/lib/postgresql/16/bin/* /usr/sbin/
+sudo ln -s /usr/lib/postgresql/15/bin/* /usr/sbin/
 ```
 
 Результат:
