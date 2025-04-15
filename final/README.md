@@ -11,7 +11,20 @@
 | node-02 | 172.17.210.19 | 5432 |
 | haproxy | 172.17.210.20 | 5432 |
 
+Ссылки в помощь:
+ - [https://stormatics.tech/blogs/setting-up-a-high-availability-3-node-postgresql-cluster-with-patroni-on-ubuntu-24-04](https://stormatics.tech/blogs/setting-up-a-high-availability-3-node-postgresql-cluster-with-patroni-on-ubuntu-24-04)
+ - [https://medium.com/@yaseminbsra.sergen/postgresql-with-patroni-high-availability-and-backup-integration-1fd97bffbac1](https://medium.com/@yaseminbsra.sergen/postgresql-with-patroni-high-availability-and-backup-integration-1fd97bffbac1)
+ - С осторожностью, вендор: [https://docs.percona.com/postgresql/16/solutions/ha-setup-apt.html#configure-haproxy](https://docs.percona.com/postgresql/16/solutions/ha-setup-apt.html#configure-haproxy)
+ - [https://docs.microfocus.com/doc/401/25.2/hasqlpatroni](https://docs.microfocus.com/doc/401/25.2/hasqlpatroni)
+ - Когда хочется всё в докерах: [https://github.com/patroni/patroni/blob/master/docker-compose.yml](https://github.com/patroni/patroni/blob/master/docker-compose.yml)
+ - 
+
 ### ETCD
+
+ - Инструкция: [https://etcd.io/docs/v2.3/docker_guide/](https://etcd.io/docs/v2.3/docker_guide/)
+ - Не забыть переключиться на свежую версию: [https://etcd.io/docs/v3.5/op-guide/container/](https://etcd.io/docs/v3.5/op-guide/container/)
+ - Не забыть в `patroni.yml` указать версию протокола `etcd3` (цифра **3** указывает на v3)
+ - Когда хочется в докере: [https://github.com/guessi/docker-compose-etcd/blob/master/docker-compose.yml](https://github.com/guessi/docker-compose-etcd/blob/master/docker-compose.yml)
 
 На каждой виртуалке:
 ```commandline
@@ -147,6 +160,8 @@ patronictl -c patroni-packages/patroni.yml list
 
 ### HAProxy
 
+[https://www.haproxy.org/](https://www.haproxy.org/)
+
 Установка на ноде `haproxy`, `172.17.210.20`:
 ```commandline
 sudo apt-get install haproxy -y
@@ -211,4 +226,5 @@ Apr 15 19:24:47 haproxy haproxy[2624]: [WARNING] 104/192447 (2624) : Server post
 ```
 
 Все запросы идут на master ноду, которая сейчас и помечена активной.
+
 
