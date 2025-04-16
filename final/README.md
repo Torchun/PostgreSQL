@@ -17,7 +17,6 @@
  - С осторожностью, вендор: [https://docs.percona.com/postgresql/16/solutions/ha-setup-apt.html#configure-haproxy](https://docs.percona.com/postgresql/16/solutions/ha-setup-apt.html#configure-haproxy)
  - [https://docs.microfocus.com/doc/401/25.2/hasqlpatroni](https://docs.microfocus.com/doc/401/25.2/hasqlpatroni)
  - Когда хочется всё в докерах: [https://github.com/patroni/patroni/blob/master/docker-compose.yml](https://github.com/patroni/patroni/blob/master/docker-compose.yml)
- - 
 
 ### ETCD
 
@@ -228,3 +227,111 @@ Apr 15 19:24:47 haproxy haproxy[2624]: [WARNING] 104/192447 (2624) : Server post
 Все запросы идут на master ноду, которая сейчас и помечена активной.
 
 
+# Тестирование
+
+Тестируем переключение под нагрузкой.
+> Нагрузку генерируем утилитой `pgbench` на локальной машине
+
+Подготовим таблицы:
+```commandline
+pgbench -i postgres -h 172.17.210.20 -p 5432 -U postgres 
+```
+```commandline
+postgres=# \dt+
+                          List of relations
+ Schema |       Name       | Type  |  Owner   |  Size   | Description 
+--------+------------------+-------+----------+---------+-------------
+ public | pgbench_accounts | table | postgres | 13 MB   | 
+ public | pgbench_branches | table | postgres | 40 kB   | 
+ public | pgbench_history  | table | postgres | 0 bytes | 
+ public | pgbench_tellers  | table | postgres | 40 kB   | 
+(4 rows)
+```
+
+Генерируем нагрузку в 32 потока, с отчетом казжые 60 секунд, в течении 30 минут:
+```commandline
+pgbench -c 8 -P 60 -T 1800 postgres -h 172.17.210.20 -p 5432 -U postgres
+```
+Виртуальные машины созданы на шпиндельных дисках специально, чтобы увидеть практические пределы без дополнительного тюнинга.
+
+### План тестирования
+ - 10 минут подается нагрузка через `HA Proxy`
+ - выключается мастер-нода, нагрузка продолжается в течении 5 минут
+ - выключается новая мастер-нода, остается единственная в кластере
+ - включаются обе выключенные ноды, нагрузка подается еще 10 минут
+
+# Результаты
+
+Исходное состояние кластера:
+```commandline
+$ patronictl -c patroni-packages/patroni.yml list
++ Cluster: postgres (7493617658843587548) ------+----+-----------+
+| Member  | Host          | Role    | State     | TL | Lag in MB |
++---------+---------------+---------+-----------+----+-----------+
+| node-00 | 172.17.210.17 | Leader  | running   |  7 |           |
+| node-01 | 172.17.210.18 | Replica | streaming |  7 |         0 |
+| node-02 | 172.17.210.19 | Replica | streaming |  7 |         0 |
++---------+---------------+---------+-----------+----+-----------+
+```
+
+Потеря первой ноды `node-00` - выключение VM, сессии обрываются:
+```commandline
+Wed Apr 16 14:51:04 UTC 2025
+
++ Cluster: postgres (7493617658843587548) ------+----+-----------+
+| Member  | Host          | Role    | State     | TL | Lag in MB |
++---------+---------------+---------+-----------+----+-----------+
+| node-00 | 172.17.210.17 | Replica | stopped   |    |   unknown |
+| node-01 | 172.17.210.18 | Replica | streaming |  8 |         0 |
+| node-02 | 172.17.210.19 | Leader  | running   |  8 |           |
++---------+---------------+---------+-----------+----+-----------+
+```
+
+**При потере больше 50% нод (2n+1) кластер перестает работать, PostgreSQL недоступен до формирования кворума**
+
+Состояние кластера в момент до включения ноды:
+```commandline
+Wed Apr 16 14:55:08 UTC 2025
+
++ Cluster: postgres (7493617658843587548) ------+----+-----------+
+| Member  | Host          | Role    | State     | TL | Lag in MB |
++---------+---------------+---------+-----------+----+-----------+
+| node-01 | 172.17.210.18 | Replica | streaming |  8 |         0 |
+| node-02 | 172.17.210.19 | Leader  | running   |  8 |           |
++---------+---------------+---------+-----------+----+-----------+
+```
+
+И в момент сразу после включения выпавшей ноды:
+```commandline
+Wed Apr 16 15:07:04 UTC 2025
+
++ Cluster: postgres (7493617658843587548) ------+----+-----------+
+| Member  | Host          | Role    | State     | TL | Lag in MB |
++---------+---------------+---------+-----------+----+-----------+
+| node-00 | 172.17.210.17 | Replica | stopped   |    |   unknown |
+| node-01 | 172.17.210.18 | Replica | streaming |  9 |         0 |
+| node-02 | 172.17.210.19 | Leader  | running   |  9 |           |
++---------+---------------+---------+-----------+----+-----------+
+Wed Apr 16 15:07:06 UTC 2025
+
++ Cluster: postgres (7493617658843587548) ------+----+-----------+
+| Member  | Host          | Role    | State     | TL | Lag in MB |
++---------+---------------+---------+-----------+----+-----------+
+| node-00 | 172.17.210.17 | Replica | running   |  7 |       416 |
+| node-01 | 172.17.210.18 | Replica | streaming |  9 |         0 |
+| node-02 | 172.17.210.19 | Leader  | running   |  9 |           |
++---------+---------------+---------+-----------+----+-----------+
+```
+
+Спустя небольшое время, данные докатываются на восстановившуюся ноду, лаг устраняется
+```commandline
+Wed Apr 16 15:08:07 UTC 2025
+
++ Cluster: postgres (7493617658843587548) ------+----+-----------+
+| Member  | Host          | Role    | State     | TL | Lag in MB |
++---------+---------------+---------+-----------+----+-----------+
+| node-00 | 172.17.210.17 | Replica | streaming |  9 |         0 |
+| node-01 | 172.17.210.18 | Replica | streaming |  9 |         0 |
+| node-02 | 172.17.210.19 | Leader  | running   |  9 |           |
++---------+---------------+---------+-----------+----+-----------+
+```
