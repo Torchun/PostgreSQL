@@ -1,0 +1,14 @@
+version: "3.7"
+
+# docker run -p 9101:9101 quay.io/prometheus/haproxy-exporter:latest --haproxy.scrape-uri="http://user:pass@haproxy.example.com/haproxy?stats;csv"
+
+services:
+  haproxy-exporter:
+    image: quay.io/prometheus/haproxy-exporter:latest
+    restart: unless-stopped
+    container_name: "haproxy-exporter"
+    ports:
+      - 9101:9101
+    command: |
+      --haproxy.scrape-uri="http://172.17.210.20/haproxy?stats;csv"
+

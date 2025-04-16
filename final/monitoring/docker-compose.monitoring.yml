@@ -1,0 +1,57 @@
+version: "3.7"
+
+services:
+
+  prometheus:
+    image: prom/prometheus:v3.3.0
+    restart: unless-stopped
+    container_name: "prometheus"
+    ports:
+      - 9090:9090
+    volumes:
+      - ./prometheus/data:/prometheus # ensure "chown -R 65534:65534 ./prometheus"
+      - ./prometheus/prometheus.yml:/etc/prometheus/prometheus.yml # ensure "chown -R 65534:65534 ./prometheus"
+    command:
+      - "--config.file=/etc/prometheus/prometheus.yml"
+      - "--storage.tsdb.path=/prometheus"
+      - "--storage.tsdb.retention.time=30d"
+
+  grafana:
+    image: grafana/grafana:11.6.0
+    restart: unless-stopped
+    container_name: "grafana"
+    volumes:
+      - ./grafana/data:/var/lib/grafana # ensure "chown -R 472:0 ./grafana/data"
+      - ./grafana/provisioning/datasources:/etc/grafana/provisioning/datasources # ensure "chown -R 472:0 ./grafana/provisioning"
+      - ./grafana/dashboard.yaml:/etc/grafana/provisioning/dashboards/main.yaml # ensure "chown -R 472:0 ./grafana/dashboard.yaml"
+      - ./grafana/dashboards:/var/lib/grafana/dashboards # ensure "chown -R 472:0 ./grafana/dashboards"
+    environment:
+      - GF_SECURITY_ADMIN_USER=admin
+      - GF_SECURITY_ADMIN_PASSWORD=admin
+      - DS_PROMETHEUS=Prometheus # this is Datasource name. See grafana/provisioning/datasources/prometheus.yml
+        # - GF_DASHBOARDS_DEFAULT_HOME_DASHBOARD_PATH=/etc/grafana/provisioning/dashboards/OS_Monitoring.json
+      - GF_DASHBOARDS_DEFAULT_HOME_DASHBOARD_PATH=/var/lib/grafana/dashboards/OS_Monitoring.json
+    depends_on:
+      - prometheus
+    ports:
+      - 3000:3000
+
+  pgadmin:
+    image: dpage/pgadmin4:9.2.0
+    restart: unless-stopped
+    container_name: pgadmin
+    environment:
+      PGADMIN_DEFAULT_EMAIL: "pgadmin@mail.lo"
+      PGADMIN_DEFAULT_PASSWORD: "password"
+      PGADMIN_CONFIG_SERVER_MODE: "False"
+    volumes:
+      - ./pgadmin:/var/lib/pgadmin # ensure "chown -R 5050:0 ./pgadmin/"
+    ports:
+      - 80:80
+    deploy:
+      resources:
+        limits:
+          cpus: '0.5'
+          memory: 1G
+
+

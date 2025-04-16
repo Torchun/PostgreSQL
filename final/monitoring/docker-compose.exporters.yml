@@ -1,0 +1,40 @@
+
+version: "3.7"
+
+services:
+
+  node-exporter:
+    image: prom/node-exporter:v1.9.1
+    restart: unless-stopped
+    user: root
+    container_name: "node-exporter"
+    volumes:
+      - /proc:/host/proc:ro
+      - /sys:/host/sys:ro
+      - /:/rootfs:ro
+    ports:
+      - 9100:9100
+    command:
+      - '--path.procfs=/host/proc'
+      - '--path.sysfs=/host/sys'
+      - '--collector.filesystem.ignored-mount-points="^/(sys|proc|dev|host|etc|rootfs/var/lib/docker/containers|rootfs/var/lib/docker/overlay2|rootfs/run/docker/netns|rootfs/var/lib/docker/aufs)($$|/)"'
+
+  postgres-exporter:
+    image: bitnami/postgres-exporter:0.17.1
+    restart: unless-stopped
+    container_name: postgres-exporter
+    environment:
+      DATA_SOURCE_URI: "172.17.210.20:5432/postgres?sslmode=disable"
+      DATA_SOURCE_USER: "postgres"
+      DATA_SOURCE_PASS: "password"
+      PG_EXPORTER_EXTEND_QUERY_PATH: "/etc/postgres_exporter/queries.yaml"
+    volumes:
+      - ./postgres/exporter/queries.yaml:/etc/postgres_exporter/queries.yaml:ro
+    ports:
+      - 9187:9187
+    deploy:
+      resources:
+        limits:
+          cpus: '0.2'
+          memory: 500M
+
