@@ -2,6 +2,8 @@
 - реализовать свой миникластер на 3 ВМ.
 <br>
 
+![Patroni cluster](./patroni_schema.png)
+
 ### Создаем 3 виртуалки
 
 | имя ВМ  | IP            | port | 
